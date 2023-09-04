@@ -10,9 +10,9 @@
 
 このブログは、基本的に
 
-- english
-- private
-- programming
+- 英語(english)
+- 私生活(private)
+- プログラミング(programming)
 
 を題材とした物を書いています。
 
