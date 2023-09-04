@@ -1,7 +1,19 @@
-# Vue 3 + Vite
+# eとpの溜り場
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## はじめに
 
-## Recommended IDE Setup
+これは、私が運営しているブログ
 
-- # [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+[eとpの溜り場](https://lepl.net)
+
+のコードです。
+
+このブログは、基本的に
+*english
+*private
+\*programming
+を題材とした物を書いています。
+
+## ポートフォリオとして
+
+また、githubに公開することで、ポートフォリオとしての役割を果たしてもらいます。
