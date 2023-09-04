@@ -10,9 +10,9 @@
 
 このブログは、基本的に
 
-- 英語 (*e*nglish)
-- 私生活 (*p*rivate)
-- プログラミング (*p*rogramming)
+- 英語 (**e**nglish)
+- 私生活 (**p**rivate)
+- プログラミング (**p**rogramming)
 
 を題材とした物を書いています。
 
