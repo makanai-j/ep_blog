@@ -9,9 +9,11 @@
 のコードです。
 
 このブログは、基本的に
-*english
-*private
-\*programming
+
+- english
+- private
+- programming
+
 を題材とした物を書いています。
 
 ## ポートフォリオとして
