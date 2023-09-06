@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import HelloWorld from './components/HelloWorld.vue'
+import HomeFooter from './components/HomeFooter.vue'
 
 let title = 'ep'
 const content = ref('')
@@ -10,8 +11,6 @@ let plus = (x) => {
   count.value += x
 }
 
-
-
 let changeFn = () => {
   if (fn.value == 'makanai') {
     fn.value = 'jumpei'
@@ -19,14 +18,22 @@ let changeFn = () => {
     fn.value = 'makanai'
   }
 }
-
 </script>
 
 <template>
-  <HelloWorld :title="title" :content="content" @plus="plus" @change-fn="changeFn" :count="count">
-    <template #firstName="{ text }">
-      {{ text }}
-    </template>
-  </HelloWorld>
-  <input v-model="content" />
+  <div class="main">
+    <HelloWorld :title="title" :content="content" @plus="plus" @change-fn="changeFn" :count="count">
+      <template #firstName="{ text }">
+        {{ text }}
+      </template>
+    </HelloWorld>
+    <input v-model="content" />
+    <HomeFooter></HomeFooter>
+  </div>
 </template>
+
+<style>
+.main {
+  width: 100vw;
+}
+</style>
