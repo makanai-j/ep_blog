@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import HelloWorld from './components/HelloWorld.vue'
-import HomeFooter from './components/HomeFooter.vue'
+import Footer from './components/ui_parts/MainFooter.vue'
 
 let title = 'ep'
 const content = ref('')
@@ -28,7 +28,7 @@ let changeFn = () => {
       </template>
     </HelloWorld>
     <input v-model="content" />
-    <HomeFooter></HomeFooter>
+    <Footer></Footer>
   </div>
 </template>
 
