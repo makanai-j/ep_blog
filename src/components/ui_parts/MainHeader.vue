@@ -1,0 +1,124 @@
+<script setup>
+import { onMounted, onUnmounted, ref } from 'vue'
+
+const pathname = ref(location.pathname)
+
+const pageList = ref([
+  {
+    pageName: '物語',
+    pageURL: '/storyList',
+    selected: pathname.value.indexOf('storyList') != -1 ? true : false,
+  },
+  {
+    pageName: '日記',
+    pageURL: '/diaryList',
+    selected: pathname.value.indexOf('diaryList') != -1 ? true : false,
+  },
+])
+
+let changedPageOnHeader = (page) => {
+  //一度falseで初期化
+  pageList.value.forEach((el) => {
+    el.selected = false
+  })
+  //pushされたpageのselectedをtrueに
+  pageList.value = pageList.value.map((el) => {
+    if (el == page) el.selected = true
+    return el
+  })
+}
+
+onMounted(() => {})
+onUnmounted(() => {})
+</script>
+
+<template>
+  <header>
+    <router-link class=".img_title" to="/">
+      <img src="/src/assets/title_ep_w.png" width="40" height="40" />
+    </router-link>
+    <nav>
+      <ol>
+        <li v-for="page in pageList" :key="page" :class="{ on: page.selected, off: !page.selected }">
+          <button>
+            <router-link :to="page.pageURL">
+              <span class="pageName">&nbsp;{{ page.pageName }}&emsp;</span>
+            </router-link>
+          </button>
+        </li>
+      </ol>
+    </nav>
+  </header>
+</template>
+
+<style>
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  margin: 0 0 10px 0;
+  background-color: rgb(80, 80, 80);
+  z-index: 999;
+}
+.img_title {
+  margin-left: 20px;
+  margin-right: 10px;
+}
+button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  padding: 1px;
+  appearance: none;
+}
+header nav {
+  width: 400px;
+  margin: auto;
+  height: fit-content;
+  width: fit-content;
+}
+header ol {
+  display: flex;
+  margin: auto auto;
+}
+/*ナビゲーションのアニメーション ↓↓*/
+li {
+  display: block;
+  font-size: 12px;
+  margin: auto 15px;
+}
+li .pageName {
+  text-decoration: none;
+  color: var(--f, white);
+}
+.on {
+  --c: 2px;
+  --g: white;
+  color: var(--f, white);
+  background: linear-gradient(var(--g) 0 0) 0% 50% / var(--c) var(--h, var(--d, 100%)) no-repeat;
+  transition: 0.3s;
+}
+.on:hover {
+  --f: rgb(200, 200, 200);
+  --h: 100%;
+}
+.off {
+  --c: 2px;
+  --g: white;
+  color: var(--f, white);
+  background: linear-gradient(var(--g) 0 0) 0% 50% / var(--c) var(--h, 0) no-repeat;
+  transition: 0.3s;
+}
+.off:hover {
+  --f: rgb(200, 200, 200);
+  --h: 100%;
+}
+nav:hover {
+  --d: 0%;
+}
+/*--------------------------------*/
+</style>

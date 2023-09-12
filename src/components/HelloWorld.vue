@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import helloPlugin from './plugins/GlobalPlugin'
+import GetURL from './plugins/GetURL'
 
 defineProps({
   title: String,
@@ -20,14 +21,16 @@ let disabled = ref(false)
 const closeOnClickOutside = ref(true)
 
 const num = ref(4)
+
+let url = GetURL.diary
 </script>
 
 <template>
-  <h1>{{ title }}</h1>
+  <h1>{{ url }}</h1>
   <p>{{ content }}</p>
   <button @click="plus_">plus {{ num }}</button>
   <h3>{{ count }}</h3>
-  <HelloPlugin :disabled="disabled" @change-show="disabled = !disabled">
+  <HelloPlugin :disabled="disabled" :closeOnClickOutside="closeOnClickOutside" @change-show="disabled = !disabled">
     <template #title> EP </template>
     <template #text> 何かしらの何か </template>
   </HelloPlugin>

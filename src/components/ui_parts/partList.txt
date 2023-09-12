@@ -1,0 +1,18 @@
+Global
+・ヘッダー
+・ヘッダーのボタン
+
+homeMain diaryList diaryPage
+・タグのボタン
+
+homeMain diaryList
+・日付とタイトルとタグの組み合わせ
+
+homeMain newsPage
+・日付とタイトルと内容の組み合わせ
+
+diaryPage
+・フッター
+・目次
+・目次のボタン
+・小題と本文の組み合わせ
