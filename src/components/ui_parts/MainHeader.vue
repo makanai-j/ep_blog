@@ -7,28 +7,45 @@ const pageList = ref([
   {
     pageName: '物語',
     pageURL: '/storyList',
+    //最初に読み込まれた時点でstoryListだった場合true
     selected: pathname.value.indexOf('storyList') != -1 ? true : false,
   },
   {
     pageName: '日記',
     pageURL: '/diaryList',
+    //最初に読み込まれた時点でdiaryListだった場合true
     selected: pathname.value.indexOf('diaryList') != -1 ? true : false,
   },
 ])
 
 let changedPageOnHeader = (page) => {
   //一度falseで初期化
-  pageList.value.forEach((el) => {
-    el.selected = false
+  pageList.value.forEach((element) => {
+    element.selected = false
   })
   //pushされたpageのselectedをtrueに
-  pageList.value = pageList.value.map((el) => {
-    if (el == page) el.selected = true
-    return el
+  pageList.value = pageList.value.map((element) => {
+    if (element.pageName == page) element.selected = true
+    return element
   })
+  console.log(page)
 }
 
-onMounted(() => {})
+const router = ref([])
+
+onMounted(() => {
+  router.value.forEach((element) => {
+    console.log(element.id)
+    let pName = element.id
+    element.addEventListener(
+      'click',
+      () => {
+        changedPageOnHeader(pName)
+      },
+      false,
+    )
+  })
+})
 onUnmounted(() => {})
 </script>
 
@@ -39,12 +56,16 @@ onUnmounted(() => {})
     </router-link>
     <nav>
       <ol>
-        <li v-for="page in pageList" :key="page" :class="{ on: page.selected, off: !page.selected }">
-          <button>
-            <router-link :to="page.pageURL">
-              <span class="pageName">&nbsp;{{ page.pageName }}&emsp;</span>
-            </router-link>
-          </button>
+        <li
+          v-for="page in pageList"
+          :id="page.pageName"
+          ref="router"
+          :key="page.name"
+          :class="{ on: page.selected, off: !page.selected }"
+        >
+          <router-link :to="page.pageURL">
+            <span class="pageName">&nbsp;{{ page.pageName }}&emsp;</span>
+          </router-link>
         </li>
       </ol>
     </nav>
