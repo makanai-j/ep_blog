@@ -22,20 +22,17 @@ let changedPageOnHeader = (page) => {
   //一度falseで初期化
   pageList.value.forEach((element) => {
     element.selected = false
-  })
-  //pushされたpageのselectedをtrueに
-  pageList.value = pageList.value.map((element) => {
+    //pushされたpageのselectedをtrueに
     if (element.pageName == page) element.selected = true
-    return element
   })
-  console.log(page)
 }
 
+const img_title = ref(null)
 const router = ref([])
 
 onMounted(() => {
+  //「物語」「日記」
   router.value.forEach((element) => {
-    console.log(element.id)
     let pName = element.id
     element.addEventListener(
       'click',
@@ -45,15 +42,28 @@ onMounted(() => {
       false,
     )
   })
+  //左上image
+  img_title.value.addEventListener(
+    'click',
+    () => {
+      //falseで初期化
+      pageList.value.forEach((element) => {
+        element.selected = false
+      })
+    },
+    false,
+  )
 })
 onUnmounted(() => {})
 </script>
 
 <template>
   <header>
-    <router-link class=".img_title" to="/">
-      <img src="/src/assets/title_ep_w.png" width="40" height="40" />
-    </router-link>
+    <div ref="img_title">
+      <router-link class="img_title" to="/">
+        <img src="/src/assets/title_ep_w.png" width="40" height="40" />
+      </router-link>
+    </div>
     <nav>
       <ol>
         <li

@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import helloPlugin from './plugins/GlobalPlugin'
 import GetURL from './plugins/GetURL'
+import DiaryTitleAndTagList from './ui_parts/DiaryTitleAndTagList.vue'
 
 defineProps({
   title: String,
