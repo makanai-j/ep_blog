@@ -1,0 +1,26 @@
+storyList
+"SELECT * FROM stories ORDER BY id_story DESC LIMIT 1";
+chapterIdTitle
+"SELECT * FROM chapters as t2 LEFT JOIN links as t3 ON t2.id_chapter = t3.id_chapter WHERE t3.id_story = ".$id_story." ORDER BY t2.id_chapter DESC";
+chapterArticle
+"SELECT * FROM chapters WHERE id_chapter = ".$id;
+
+diaryArticleTitle
+"SELECT diary_title FROM diaries WHERE id_diary = ".$id;
+"SELECT id_diary,diary_title FROM diaries ORDER BY id_diary DESC LIMIT 1";
+diaryArticle
+"SELECT id_diary,diary_title FROM diaries ORDER BY id_diary DESC LIMIT 1";
+diaryArticleDate
+"SELECT created_date FROM diaries WHERE id_diary = ".$id;
+diaryArticleContent
+"SELECT diary_content FROM diaries WHERE id_diary = ".$id;
+
+diaryList
+if setTag
+"SELECT * FROM diaries as t1
+        WHERE t1.id_diary IN (select t2.id_diary FROM links as t2 WHERE t2.id_tag = (SELECT t3.id_tag FROM tags as t3 WHERE t3.tag = '{$selectedTag}')) 
+        ORDER BY t1.id_diary DESC"
+"SELECT t1.id_tag,t1.tag,t2.id_diary FROM tags as t1 LEFT JOIN links as t2 ON t1.id_tag = t2.id_tag WHERE t2.id_diary = (SELECT  links.id_diary FROM links WHERE links.id_tag = (SELECT t3.id_tag FROM tags as t3 WHERE t3.tag = '{$selectedTag}')) ORDER BY id_diary  DESC";
+else
+"SELECT t1.id_diary,diary_title,t1.diary_image,t1.created_date FROM diaries as t1 ORDER BY t1.id_diary DESC";
+$sql="SELECT t1.id_tag,t1.tag,t2.id_diary FROM tags as t1 LEFT JOIN links as t2 ON t1.id_tag = t2.id_tag ORDER BY id_diary DESC";
