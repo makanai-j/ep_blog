@@ -26,4 +26,7 @@ import Footer from './components/ui_parts/MainFooter.vue'
 .router-link-active {
   font-weight: bold;
 }
+div {
+  background: gray;
+}
 </style>

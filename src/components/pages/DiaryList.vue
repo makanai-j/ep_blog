@@ -1,21 +1,58 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import DiaryTitleAndTagList from '../ui_parts/DiaryTitleAndTagList.vue'
 import GetData from '../../data_base/GetData'
 
-let diaryDBObj = new GetData('diary', 'select * from diaries')
-const data = ref(diaryDBObj.fetchData())
-/*
-console.log(data)
-watch(data, () => {
-  console.log(data)
-})*/
+//以下のrefの更新とともにdomも更新される
+//diaryの主要なデータ
+const diariesData = ref('')
+//diaryのtag
+const tagsData = ref('')
+//取得したtagを成形したものを格納
+const tagsGroupData = ref({})
 
 //通常時
+//axiosを順次発行
+let getData = async () => {
+  diariesData.value = await new GetData('diary', 'select * from diaries').fetchData()
+  tagsData.value = await new GetData(
+    'diary',
+    'SELECT t1.id_tag,t1.tag,t2.id_diary FROM tags as t1 LEFT JOIN links as t2 ON t1.id_tag = t2.id_tag ORDER BY id_diary DESC',
+  ).fetchData()
+
+  //tagを成形
+  tagsData.value.data.forEach((element) => {
+    var key = element['id_diary']
+    var tag = element['tag']
+    //id_diaryをkeyにして
+    //key(id_diary)がすでに有ればtagを追加
+    if (isset(tagsGroupData.value[key])) {
+      tagsGroupData.value[key].push(tag)
+      //key(id_diary)が無ければkey:valueのsetを追加
+    } else {
+      tagsGroupData.value[key] = [tag]
+    }
+  })
+
+  console.log(tagsGroupData.value)
+}
+//実行
+getData()
+//phpのissetと同等の関数
+function isset(data) {
+  if (typeof data == 'undefined') return false
+  else return true
+}
 
 //tag選択時
 </script>
 <template>
-  {{ data }}
-  <DiaryTitleAndTagList></DiaryTitleAndTagList>
+  <ol>
+    <li v-for="data in diariesData.data" :key="data['id_diary']">
+      <DiaryTitleAndTagList :tags="tagsGroupData[data['id_diary']]">
+        <template #date>{{ data['created_date'] }}</template>
+        <template #title>{{ data['diary_title'] }}</template>
+      </DiaryTitleAndTagList>
+    </li>
+  </ol>
 </template>

@@ -2,19 +2,19 @@
 $usr = 'root';
 $pass = '';
 try{
-    //$query = $_POST["query"];
-    //$DBName = $_POST["DBName"];
-    $query = "select * from diaries";
-    $DBName = "blog_english_mysql";
+    $query = $_POST["query"];
+    $DBName = $_POST["DBName"];
+    //$query = "select * from diaries";
+    //$DBName = "blog_english_mysql";
     //アクセス先のdataBaseを選択、nullならnull返して終了
-    /*if(is_null($DBName)) {
+    if(is_null($DBName)) {
         echo null;
         exit();
     }else if($DBName == "story"){
         $DBName = "blog_story_mysql";
     }else if($DBName == "diary"){
         $DBName = "blog_english_mysql";
-    }*/
+    }
 
     $dsn = "mysql:host=localhost;dbname={$DBName};charset=utf8";
 

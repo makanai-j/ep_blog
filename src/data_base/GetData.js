@@ -18,18 +18,15 @@ class GetData {
   //xamppのdatabaseが起動しているか、起動しない場合portが使用されているのかを確認
   //またはxamppが破損している可能性あり
   //データ破損の場合は ➝ 参考url https://notes-de-design.com/website/tips/mysql-shutdown-unexpectedly-xampp/
-  fetchData() {
-    this.axiosObj
-      .post('http://localhost/php/ep_blog/src/data_base/ToDB.php', this.params)
-      .then((response) => {
-        console.log(response)
-        this.data = response
-        return this.data
-      })
-      .catch(() => {
-        console.log('sippai')
-        return null
-      })
+  async fetchData() {
+    //axiosは非同期処理なのでthenやcatch内でreturnしても意味ないらしい
+    //なのでこのように、実行自体を非同期にしてaxiosの返り値を返すようにする
+    //さらに、受け取る側も非同期にする
+    return await this.axiosObj.post('http://localhost/php/ep_blog/src/data_base/ToDB.php', this.params)
+  }
+
+  get getFetchData() {
+    return this.data
   }
 }
 
