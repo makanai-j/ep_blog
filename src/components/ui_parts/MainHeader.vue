@@ -60,7 +60,7 @@ onUnmounted(() => {})
 <template>
   <header>
     <div ref="img_title">
-      <router-link class="img_title" to="/">
+      <router-link class="img_title" to="/index.html">
         <img src="/src/assets/title_ep_w.png" width="40" height="40" />
       </router-link>
     </div>

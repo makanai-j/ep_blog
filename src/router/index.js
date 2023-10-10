@@ -10,6 +10,11 @@ const router = createRouter({
       component: HomeVue,
     },
     {
+      path: '/index.html',
+      name: 'home',
+      component: HomeVue,
+    },
+    {
       path: '/diaryList',
       name: 'diaryList',
       component: () => import('../components/pages/DiaryList.vue'),

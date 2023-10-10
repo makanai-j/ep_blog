@@ -59,12 +59,33 @@ function formatDate(dateStr) {
 //tag選択時
 </script>
 <template>
-  <ol>
-    <li v-for="data in diariesData.data" :key="data['id_diary']" style="text-decoration: none">
-      <DiaryTitleAndTagList :tags="tagsGroupData[data['id_diary']]">
-        <template #date>{{ formatDate(data['created_date']) }}</template>
-        <template #title>{{ data['diary_title'] }}</template>
-      </DiaryTitleAndTagList>
-    </li>
-  </ol>
+  <div class="diaryTitleTags">
+    <div class="innerarea">
+      <ul>
+        <li v-for="data in diariesData.data" :key="data['id_diary']" style="list-style: none">
+          <DiaryTitleAndTagList :tags="tagsGroupData[data['id_diary']]">
+            <template #date>{{ formatDate(data['created_date']) }}</template>
+            <template #title>{{ data['diary_title'] }}</template>
+          </DiaryTitleAndTagList>
+        </li>
+      </ul>
+    </div>
+  </div>
 </template>
+
+<style>
+.diaryTitleTags {
+  position: relative;
+  width: 100%;
+  height: fit-content;
+  margin-top: 0;
+}
+.innerarea {
+  width: 70%;
+  min-width: 340px;
+  max-width: 530px;
+  margin: 0 auto;
+  padding: 17px 0;
+  padding: 50px 0;
+}
+</style>

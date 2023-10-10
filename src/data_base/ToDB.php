@@ -14,6 +14,8 @@ try{
         $DBName = "blog_story_mysql";
     }else if($DBName == "diary"){
         $DBName = "blog_english_mysql";
+    }else if($DBName == "info"){
+        $DBName = "blog_information";
     }
 
     $dsn = "mysql:host=localhost;dbname={$DBName};charset=utf8";

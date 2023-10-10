@@ -6,14 +6,10 @@ const props = defineProps({ tags: String })
 
 <template>
   <article>
-    <div>
-      <p class="date"><slot name="date"></slot></p>
-    </div>
-    <div>
-      <h2>
-        <a class="title" href="./" style="text-decoration: none"><slot name="title"></slot></a>
-      </h2>
-    </div>
+    <p class="date"><slot name="date"></slot></p>
+    <h2>
+      <a class="title" href="./" style="text-decoration: none"><slot name="title"></slot></a>
+    </h2>
     <div class="tags">
       <Tag-Button v-for="tag in props.tags" :key="tag"> {{ tag }} </Tag-Button>
     </div>
@@ -24,9 +20,11 @@ const props = defineProps({ tags: String })
 article {
   min-height: 7em;
 }
-article .title {
+article h2 {
   margin: 5px 0 10px 0;
-  color: white;
+  text-align: start;
+}
+article .title {
   font-size: 25px;
 }
 article .title:hover {
@@ -35,9 +33,10 @@ article .title:hover {
 article .date {
   font-size: 11px;
 }
-article .data,
+article .date,
 article .title {
-  text-align: left;
+  text-align: start;
+  color: white;
 }
 .tags {
   display: flex;
