@@ -117,38 +117,38 @@ header ol {
   margin: auto auto;
 }
 /*ナビゲーションのアニメーション ↓↓*/
-li {
+header ol li {
   display: block;
   font-size: 12px;
   margin: auto 15px;
 }
-li .pageName {
+header ol li .pageName {
   text-decoration: none;
   color: var(--f, white);
 }
-.on {
+header ol .on {
   --c: 2px;
   --g: white;
   color: var(--f, white);
   background: linear-gradient(var(--g) 0 0) 0% 50% / var(--c) var(--h, var(--d, 100%)) no-repeat;
   transition: 0.3s;
 }
-.on:hover {
+header ol .on:hover {
   --f: rgb(200, 200, 200);
   --h: 100%;
 }
-.off {
+header ol .off {
   --c: 2px;
   --g: white;
   color: var(--f, white);
   background: linear-gradient(var(--g) 0 0) 0% 50% / var(--c) var(--h, 0) no-repeat;
   transition: 0.3s;
 }
-.off:hover {
+header ol .off:hover {
   --f: rgb(200, 200, 200);
   --h: 100%;
 }
-nav:hover {
+header nav:hover {
   --d: 0%;
 }
 /*--------------------------------*/

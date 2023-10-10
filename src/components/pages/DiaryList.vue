@@ -44,13 +44,25 @@ function isset(data) {
   else return true
 }
 
+function formatDate(dateStr) {
+  var date = new Date(dateStr)
+  var options = {
+    year: 'numeric', //年の形式
+    month: 'long', //月の形式
+    day: 'numeric', //日の形式
+    weekday: 'narrow', //曜日の形式
+  }
+  var dateJP = new Intl.DateTimeFormat('ja-JP', options).format(date)
+  return dateJP
+}
+
 //tag選択時
 </script>
 <template>
   <ol>
-    <li v-for="data in diariesData.data" :key="data['id_diary']">
+    <li v-for="data in diariesData.data" :key="data['id_diary']" style="text-decoration: none">
       <DiaryTitleAndTagList :tags="tagsGroupData[data['id_diary']]">
-        <template #date>{{ data['created_date'] }}</template>
+        <template #date>{{ formatDate(data['created_date']) }}</template>
         <template #title>{{ data['diary_title'] }}</template>
       </DiaryTitleAndTagList>
     </li>

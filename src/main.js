@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import './style.css'
+import './reset.css'
 import App from './App.vue'
 import GlobalPlugin from './components/plugins/GlobalPlugin.js'
 import LoadScript from './components/plugins/LoadScript'
