@@ -5,11 +5,7 @@ import GetData from '../../data_base/GetData'
 const informations = ref('')
 
 let getData = async () => {
-  console.log('infox be')
-
   informations.value = await new GetData('info', 'select * from informations').fetchData()
-
-  console.log('infox af')
 }
 
 getData()
@@ -29,7 +25,7 @@ function formatDate(dateStr) {
 <template>
   <div class="info_area">
     <div class="info_innerarea">
-      <p>お知らせ</p>
+      <p class="info_area_title">info</p>
       <ul>
         <li v-for="info in informations.data" :key="info['id_information']" style="list-style: none">
           <article class="info_article">
@@ -39,7 +35,7 @@ function formatDate(dateStr) {
             <h3 class="subject">
               {{ info['subject'] }}
             </h3>
-            <div class="speech_bubble">
+            <div v-if="info['text'] != null" class="speech_bubble">
               <div class="triangle"></div>
               <p class="text">
                 {{ info['text'] }}
@@ -55,9 +51,8 @@ function formatDate(dateStr) {
 <style>
 .info_area {
   width: 100%;
-  height: 600px;
+  height: fit-content;
   display: flex;
-  background-color: rgb(200, 200, 200);
 }
 .info_innerarea {
   width: 70%;
@@ -65,6 +60,11 @@ function formatDate(dateStr) {
   max-width: 530px;
   margin: 0 auto;
   padding: 17px 0;
+}
+.info_area_title {
+  text-align: start;
+  font-weight: bold;
+  font-size: 25px;
 }
 .info_article {
   text-align: start;
@@ -97,13 +97,13 @@ function formatDate(dateStr) {
   margin-left: 35%;
   border-right: solid transparent 12px;
   border-left: solid transparent 3px;
-  border-bottom: solid rgb(255, 255, 255) 13px;
+  border-bottom: solid rgb(200, 200, 200) 13px;
 }
 .info_article .text {
   margin-left: 30px;
   padding: 6px 10px;
   font-size: 13px;
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(200, 200, 200);
   border-radius: 4px;
   word-wrap: break-word;
   overflow-wrap: break-word;

@@ -1,5 +1,5 @@
 <script setup>
-import DiaryList from './DiaryList.vue'
+import DiaryList from '../ui_parts/DiaryList.vue'
 import InfoX from './InfoX.vue'
 </script>
 

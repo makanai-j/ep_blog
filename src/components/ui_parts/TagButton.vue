@@ -3,10 +3,16 @@
  *タグにホバーした時に関連するblogタイトルを
  *吹き出しのような形で表示する
  */
+
+defineProps({
+  tag: String,
+})
 </script>
 
 <template>
-  <a class="tag" href="./" style="text-decoration: none"> <span>#</span><slot></slot> </a>
+  <router-link class="tag" :to="'/diary/tag-' + tag" style="text-decoration: none">
+    <span>#</span><slot></slot>
+  </router-link>
 </template>
 
 <style>
@@ -20,7 +26,7 @@
   padding: 5px 5px;
   font-size: 12px;
   font-weight: 400;
-  background-color: rgb(255, 255, 255, 0.85);
+  background-color: rgb(200, 200, 200, 0.5);
 }
 .tag:hover {
   color: rgb(90, 90, 90, 0.6);

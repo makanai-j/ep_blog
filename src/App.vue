@@ -12,13 +12,15 @@ import Footer from './components/ui_parts/MainFooter.vue'
 </template>
 
 <style>
+@font-face {
+  font-family: 'customFont';
+  src: url('../NotoSerifJP-Regular_.woff');
+  /*src: url('../_other/NotoSerifJP-Bold.otf');*/
+}
 .main {
   width: 100vw;
 }
 .router-link-active {
   font-weight: bold;
-}
-div {
-  background: gray;
 }
 </style>

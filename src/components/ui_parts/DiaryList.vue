@@ -1,7 +1,12 @@
 <script setup>
 import { ref } from 'vue'
-import DiaryTitleAndTagList from '../ui_parts/DiaryTitleAndTagList.vue'
+import DiaryTitleAndTagList from './DiaryTitleAndTagList.vue'
 import GetData from '../../data_base/GetData'
+import { onBeforeRouteUpdate } from 'vue-router'
+
+const props = defineProps({
+  pagePath: String,
+})
 
 //以下のrefの更新とともにdomも更新される
 //diaryの主要なデータ
@@ -63,7 +68,7 @@ function formatDate(dateStr) {
     <div class="innerarea">
       <ul>
         <li v-for="data in diariesData.data" :key="data['id_diary']" style="list-style: none">
-          <DiaryTitleAndTagList :tags="tagsGroupData[data['id_diary']]">
+          <DiaryTitleAndTagList :tags="tagsGroupData[data['id_diary']]" :id="data['id_diary']">
             <template #date>{{ formatDate(data['created_date']) }}</template>
             <template #title>{{ data['diary_title'] }}</template>
           </DiaryTitleAndTagList>

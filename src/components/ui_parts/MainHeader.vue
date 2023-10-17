@@ -1,7 +1,9 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 const pathname = ref(location.pathname)
+console.log(useRoute())
 
 const pageList = ref([
   {
@@ -18,6 +20,7 @@ const pageList = ref([
   },
 ])
 
+// pageListのselected更新用
 let changedPageOnHeader = (page) => {
   //一度falseで初期化
   pageList.value.forEach((element) => {
@@ -29,6 +32,18 @@ let changedPageOnHeader = (page) => {
 
 const img_title = ref(null)
 const router = ref([])
+
+// browserバック時にpageListのseletectedを更新
+window.addEventListener('popstate', () => {
+  let path = location.pathname
+  if (path.indexOf('story') != -1) {
+    changedPageOnHeader(pageList.value[0].pageName)
+  } else if (path.indexOf('diary') != -1) {
+    changedPageOnHeader(pageList.value[1].pageName)
+  } else {
+    changedPageOnHeader('index')
+  }
+})
 
 onMounted(() => {
   //「物語」「日記」
@@ -61,7 +76,7 @@ onUnmounted(() => {})
   <header>
     <div ref="img_title">
       <router-link class="img_title" to="/index.html">
-        <img src="/src/assets/title_ep_w.png" width="40" height="40" />
+        <img src="../../assets/title_ep_w.png" width="40" height="40" />
       </router-link>
     </div>
     <nav>
