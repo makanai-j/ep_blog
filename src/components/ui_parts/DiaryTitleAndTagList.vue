@@ -11,7 +11,7 @@ const props = defineProps({
   <article>
     <p class="date"><slot name="date"></slot></p>
     <h2>
-      <router-link class="title" :to="'/diary/id-' + props.id" style="text-decoration: none">
+      <router-link class="title" :to="'/diary/' + props.id" style="text-decoration: none">
         <slot name="title"></slot>
       </router-link>
     </h2>

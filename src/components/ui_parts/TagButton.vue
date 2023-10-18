@@ -10,7 +10,7 @@ defineProps({
 </script>
 
 <template>
-  <router-link class="tag" :to="'/diary/tag-' + tag" style="text-decoration: none">
+  <router-link class="tag" :to="'/diaryList/tag-' + tag" style="text-decoration: none">
     <span>#</span><slot></slot>
   </router-link>
 </template>

@@ -29,10 +29,12 @@ try{
 
 $stmt = $pdo->query($query);
 //responseがfalseでなければ配列にして返す
-if($stmt){
+if($stmt && $stmt -> rowCount() > 0){
     foreach($stmt as $row){
         $data[] = $row;
     }
+} else {
+    $data = false;
 }
 
 //jsonで返す
