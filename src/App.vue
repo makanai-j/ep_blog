@@ -16,6 +16,7 @@ import Footer from './components/ui_parts/MainFooter.vue'
   font-family: 'customFont';
   src: url('../NotoSerifJP-Regular_.woff');
   /*src: url('../_other/NotoSerifJP-Bold.otf');*/
+  /*src: url('../_other/NotoSerifJP-Bold.otf');*/
 }
 .main {
   width: 100vw;
