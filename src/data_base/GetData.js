@@ -22,7 +22,7 @@ class GetData {
     //axiosは非同期処理なのでthenやcatch内でreturnしても意味ないらしい
     //なのでこのように、実行自体を非同期にしてaxiosの返り値を返すようにする
     //さらに、受け取る側も非同期にする
-    return await this.axiosObj.post('http://localhost/php/ep_blog/src/data_base/ToDB.php', this.params)
+    return await this.axiosObj.post('/ToDB.php', this.params)
   }
 
   get getFetchData() {

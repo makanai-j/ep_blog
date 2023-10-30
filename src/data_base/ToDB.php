@@ -1,6 +1,4 @@
 <?php
-$usr = 'root';
-$pass = '';
 try{
     $query = $_POST["query"];
     $DBName = $_POST["DBName"];
@@ -18,7 +16,10 @@ try{
         $DBName = "blog_information";
     }
 
-    $dsn = "mysql:host=localhost;dbname={$DBName};charset=utf8";
+    
+    $dsn = 'mysql:host=mysql654.db.sakura.ne.jp;dbname=oliveyak75_diary_japanese;charset=utf8';
+    $usr = 'oliveyak75';
+    $pass = '12271206j';
 
     $pdo = new PDO($dsn,$usr,$pass);
     //エラー処理

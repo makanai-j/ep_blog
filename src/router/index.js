@@ -15,8 +15,13 @@ const router = createRouter({
       component: HomeVue,
     },
     {
-      path: '/diaryList/:id',
+      path: '/diaryList',
       name: 'diaryList',
+      component: () => import('../components/pages/DiaryListPage.vue'),
+    },
+    {
+      path: '/diaryList/:id',
+      name: 'diaryListId',
       component: () => import('../components/pages/DiaryListPage.vue'),
     },
     {

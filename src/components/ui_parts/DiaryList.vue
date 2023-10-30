@@ -1,12 +1,25 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import DiaryTitleAndTagList from './DiaryTitleAndTagList.vue'
 import GetData from '../../data_base/GetData'
-import { onBeforeRouteUpdate } from 'vue-router'
 
+/*
 const props = defineProps({
   pagePath: String,
-})
+})*/
+
+const header = useRoute()
+const id = ref(header.params.id)
+
+let query = ''
+if (typeof id.value === 'string' && id.value != '') {
+  console.log('id')
+  query = `select * from diaries where id_diary in (select id_diary from links where id_tag in (select id_tag from tags where tag = '${id.value}'))`
+} else {
+  console.log('no id')
+  query = 'select * from diaries'
+}
 
 //以下のrefの更新とともにdomも更新される
 //diaryの主要なデータ
@@ -19,7 +32,7 @@ const tagsGroupData = ref({})
 //通常時
 //axiosを順次発行
 let getData = async () => {
-  diariesData.value = await new GetData('diary', 'select * from diaries').fetchData()
+  diariesData.value = await new GetData('diary', query).fetchData()
   tagsData.value = await new GetData(
     'diary',
     'SELECT t1.id_tag,t1.tag,t2.id_diary FROM tags as t1 LEFT JOIN links as t2 ON t1.id_tag = t2.id_tag ORDER BY id_diary DESC',
@@ -60,16 +73,15 @@ function formatDate(dateStr) {
   var dateJP = new Intl.DateTimeFormat('ja-JP', options).format(date)
   return dateJP
 }
-
-//tag選択時
 </script>
+
 <template>
   <div class="diaryTitleTags">
     <div class="innerarea">
       <ul>
         <li v-for="data in diariesData.data" :key="data['id_diary']" style="list-style: none">
           <DiaryTitleAndTagList :tags="tagsGroupData[data['id_diary']]" :id="data['id_diary']">
-            <template #date>{{ formatDate(data['created_date']) }}</template>
+            <template #date>{{ data['created_date'] }}</template>
             <template #title>{{ data['diary_title'] }}</template>
           </DiaryTitleAndTagList>
         </li>
