@@ -1,11 +1,6 @@
 <script setup>
 import Header from './components/ui_parts/MainHeader.vue'
 import Footer from './components/ui_parts/MainFooter.vue'
-
-onMounted(() => {
-  let scrollBarWidth = window.innerWidth - document.documentElement.clientWidth
-  document.documentElement.style.setProperty('--scrollBarWidth', `${scrollBarWidth}px`)
-})
 </script>
 
 <template>
@@ -19,15 +14,12 @@ onMounted(() => {
 </template>
 
 <style>
-:root {
-  --scrollBarWidth: 0px;
-}
 @font-face {
   font-family: 'customFont';
   src: url('../NotoSerifJP-Regular_.woff');
 }
 .main {
-  width: calc(100vw - var(--scrollBarWidth));
+  width: 100vw;
   background: black;
 }
 .section-content {
