@@ -1,25 +1,28 @@
 <?php
+$ini_path = "{$_SERVER['DOCUMENT_ROOT']}/../env_vars/lepl.net.ini";
+// php.ini をパースします
+$ini = parse_ini_file($ini_path);
+
 try{
     $query = $_POST["query"];
-    $DBName = $_POST["DBName"];
+    $dbName = $_POST["DBName"];
     //$query = "select * from diaries";
     //$DBName = "blog_english_mysql";
     //アクセス先のdataBaseを選択、nullならnull返して終了
-    if(is_null($DBName)) {
+    if(is_null($dbName)) {
         echo null;
         exit();
-    }else if($DBName == "story"){
-        $DBName = "blog_story_mysql";
-    }else if($DBName == "diary"){
-        $DBName = "blog_english_mysql";
-    }else if($DBName == "info"){
-        $DBName = "blog_information";
+    }else if($dbName == "story"){
+        $dbName = $ini["DB_STORY"];
+    }else if($dbName == "diary"){
+        $dbName = $ini["DB_DIARY"];
+    }else if($dbName == "info"){
+        $dbName = $ini["DB_INFO"];
     }
 
-    
-    $dsn = 'mysql:host=mysql654.db.sakura.ne.jp;dbname=oliveyak75_diary_japanese;charset=utf8';
-    $usr = 'oliveyak75';
-    $pass = '12271206j';
+    $dsn = "mysql:host={$ini["DB_HOST"]};dbname={$dbName};charset=utf8";
+    $usr = $ini["USER_NAME"];
+    $pass = $ini["PWD"];
 
     $pdo = new PDO($dsn,$usr,$pass);
     //エラー処理
