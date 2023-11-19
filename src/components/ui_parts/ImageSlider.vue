@@ -1,19 +1,10 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 
-const images = ref([])
-const validScroll = ref(false)
-
-let getData = () => {
-  let i = 0
-  for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9]) {
-    images.value.push(i)
-  }
-}
-getData()
+const validScrollMouse = ref(false)
+const validScrollTouch = ref(false)
 
 const slides = ref(null)
-
 onMounted(() => {
   for (let slide of slides.value.children) {
     slide.classList.add('slide')
@@ -24,9 +15,17 @@ let mouseX = -10
 let startTime = 0
 let distanceX = 0
 let spead = 0
+let wheelTimeout = null
 
 let scroll = (element) => {
-  let x = element.clientX
+  // console.log('scroll 8')
+  let x = 0
+  if (element.type == 'mousemove') {
+    x = element.clientX
+  } else if (element.type == 'touchmove') {
+    x = element.changedTouches[0].pageX
+  }
+
   if (mouseX > 0) {
     let diff = mouseX - x
     let elapsedTime = Date.now() - startTime
@@ -37,6 +36,7 @@ let scroll = (element) => {
     }
     distanceX += diff
     spead = Math.floor((distanceX / elapsedTime) * 100)
+    //speadText.value = spead
     let leftOffset = Math.abs(slides.value.scrollLeft) + diff
     slides.value.scrollTo(leftOffset, 0)
   } else {
@@ -46,6 +46,7 @@ let scroll = (element) => {
 }
 
 let scrollCancel = () => {
+  // alert('scrollCancel')
   if (Math.abs(spead) > 200) {
     adjustCenter(spead)
   } else {
@@ -53,7 +54,8 @@ let scrollCancel = () => {
   }
 
   spead = 0
-  validScroll.value = false
+  validScrollMouse.value = false
+  validScrollTouch.value = false
   mouseX = -10
 }
 
@@ -79,25 +81,72 @@ let adjustCenter = (place = 0) => {
     }
   }
 }
+
+let wheelEvent = () => {
+  if (!validScrollMouse.value && !validScrollTouch.value) {
+    if (wheelTimeout) {
+      clearTimeout(wheelTimeout)
+    }
+    wheelTimeout = setTimeout(() => {
+      scrollCancel()
+    }, 100)
+  }
+}
 </script>
 
 <template>
   <div class="slider-container">
-    <div class="slider">
+    <div class="slider" @scrollend="testText = 'slider'">
       <div
         ref="slides"
         class="slides"
         v-on="{
-          pointerdown: () => {
-            validScroll = true
+          mousedown: () => {
+            if (!validScrollTouch) {
+              validScrollMouse = true
+              console.log('mousedown')
+            }
           },
-          pointerup: validScroll ? scrollCancel : undefined,
-          pointercancel: validScroll ? scrollCancel : undefined,
-          pointerleave: validScroll ? scrollCancel : undefined,
+          mouseup: validScrollMouse ? scrollCancel : undefined,
+          pointercancel: validScrollMouse ? scrollCancel : undefined,
+          pointerleave: validScrollMouse ? scrollCancel : undefined,
+          mousemove: validScrollMouse ? scroll : undefined,
+          touchstart: () => {
+            if (!validScrollMouse) {
+              validScrollTouch = true
+              console.log('touchstart')
+            }
+          },
+          touchend: validScrollTouch ? scrollCancel : undefined,
+          touchCancel: validScrollTouch ? scrollCancel : undefined,
+          touchmove: validScrollTouch ? scroll : undefined,
+          wheel: wheelEvent,
           selectstart: (e) => {
             e.preventDefault()
           },
-          mousemove: validScroll ? scroll : undefined,
+          /*
+          scroll: () => {
+            if (!validScrollClick) {
+              validScrollScroll = true
+            }
+            testText = 'scroll'
+          },
+          scrollend: validScrollScroll
+            ? () => {
+                scrollCancel()
+                testText = 'scrollend'
+              }
+            : undefined,
+          touchstart: () => {
+            validScrollClick = true
+            testText = 'touchstart'
+          },
+          mousewheel: () => {
+            testText = 'wheel'
+            validScrollClick = true
+          },
+          scrollend: validScrollScroll ? scrollCancel : undefined,
+*/
         }"
       >
         <slot></slot>
