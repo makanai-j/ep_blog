@@ -111,6 +111,7 @@ let wheelEvent = () => {
           pointercancel: validScrollMouse ? scrollCancel : undefined,
           pointerleave: validScrollMouse ? scrollCancel : undefined,
           mousemove: validScrollMouse ? scroll : undefined,
+
           touchstart: () => {
             if (!validScrollMouse) {
               validScrollTouch = true
@@ -120,33 +121,12 @@ let wheelEvent = () => {
           touchend: validScrollTouch ? scrollCancel : undefined,
           touchCancel: validScrollTouch ? scrollCancel : undefined,
           touchmove: validScrollTouch ? scroll : undefined,
+
           wheel: wheelEvent,
+
           selectstart: (e) => {
             e.preventDefault()
           },
-          /*
-          scroll: () => {
-            if (!validScrollClick) {
-              validScrollScroll = true
-            }
-            testText = 'scroll'
-          },
-          scrollend: validScrollScroll
-            ? () => {
-                scrollCancel()
-                testText = 'scrollend'
-              }
-            : undefined,
-          touchstart: () => {
-            validScrollClick = true
-            testText = 'touchstart'
-          },
-          mousewheel: () => {
-            testText = 'wheel'
-            validScrollClick = true
-          },
-          scrollend: validScrollScroll ? scrollCancel : undefined,
-*/
         }"
       >
         <slot></slot>

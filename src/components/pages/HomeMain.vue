@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import DiaryList from '../ui_parts/DiaryList.vue'
 import ImageSlider from '../ui_parts/ImageSlider.vue'
+import TopicCard from '../ui_parts/TopicCard.vue'
 
 const images = ref([])
 let getData = () => {
@@ -14,12 +15,16 @@ getData()
 </script>
 
 <template>
-  <DiaryList></DiaryList>
   <ImageSlider>
     <div class="empty-slide"></div>
     <div v-for="image in images" :key="image" class="image">{{ image }}</div>
     <div class="empty-slide"></div>
   </ImageSlider>
+  <TopicCard>
+    <template #title> </template>
+    <template #content>bbbb</template>
+  </TopicCard>
+  <DiaryList></DiaryList>
 </template>
 
 <style>
