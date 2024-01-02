@@ -37,7 +37,10 @@ let scroll = (element) => {
     spead = Math.floor((distanceX / elapsedTime) * 100)
     //speadText.value = spead
     let leftOffset = Math.abs(slides.value.scrollLeft) + diff
-    //slides.value.scrollTo(leftOffset, 0)
+    if (element.type == 'mousemove') {
+      //pcでのタッチスクロールに反応させるために必要でしたわ ↓
+      slides.value.scrollTo(leftOffset, 0)
+    }
   } else {
     startTime = Date.now()
   }
