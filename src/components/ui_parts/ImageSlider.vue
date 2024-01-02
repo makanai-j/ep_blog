@@ -18,7 +18,6 @@ let spead = 0
 let wheelTimeout = null
 
 let scroll = (element) => {
-  // console.log('scroll 8')
   let x = 0
   if (element.type == 'mousemove') {
     x = element.clientX
@@ -38,7 +37,7 @@ let scroll = (element) => {
     spead = Math.floor((distanceX / elapsedTime) * 100)
     //speadText.value = spead
     let leftOffset = Math.abs(slides.value.scrollLeft) + diff
-    slides.value.scrollTo(leftOffset, 0)
+    //slides.value.scrollTo(leftOffset, 0)
   } else {
     startTime = Date.now()
   }
@@ -46,7 +45,6 @@ let scroll = (element) => {
 }
 
 let scrollCancel = () => {
-  // alert('scrollCancel')
   if (Math.abs(spead) > 200) {
     adjustCenter(spead)
   } else {
@@ -68,15 +66,22 @@ let adjustCenter = (place = 0) => {
 
     if (element.offsetLeft <= slidesOffsetCenter && element.offsetLeft + element.clientWidth >= slidesOffsetCenter) {
       let moveDistance = 0
+
       if (place > 0) {
         moveDistance = element.clientWidth
       } else if (place < 0) {
         moveDistance = -element.clientWidth
       }
-      slides.value.scrollTo({
-        left: element.offsetLeft + harfWidth - windowOffsetCenter + moveDistance,
-        behavior: 'smooth',
-      })
+      let lastElementLeft = element.clientWidth * (slideElements.length - 1)
+      let offsetWindowLeft = element.offsetLeft + harfWidth - windowOffsetCenter + moveDistance
+
+      if (slides.value.scrollLeft >= 0 && slides.value.scrollLeft <= lastElementLeft) {
+        slides.value.scrollTo({
+          left: offsetWindowLeft,
+          behavior: 'smooth',
+        })
+      }
+
       break
     }
   }

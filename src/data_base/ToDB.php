@@ -27,18 +27,19 @@ try{
     $pdo = new PDO($dsn,$usr,$pass);
     //エラー処理
     $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_SILENT);
+
+    $stmt = $pdo->query($query);
 }catch (PDOException $e){
     exit($e->getMessage());
 }
 
-$stmt = $pdo->query($query);
 //responseがfalseでなければ配列にして返す
 if($stmt && $stmt -> rowCount() > 0){
     foreach($stmt as $row){
         $data[] = $row;
     }
 } else {
-    $data = false;
+    $data[] = false;
 }
 
 //jsonで返す

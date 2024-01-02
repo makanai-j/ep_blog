@@ -15,16 +15,16 @@ getData()
 </script>
 
 <template>
-  <ImageSlider>
-    <div class="empty-slide"></div>
-    <div v-for="image in images" :key="image" class="image">{{ image }}</div>
-    <div class="empty-slide"></div>
-  </ImageSlider>
   <TopicCard>
     <template #title> </template>
     <template #content>bbbb</template>
   </TopicCard>
   <DiaryList></DiaryList>
+  <ImageSlider>
+    <!--<div class="empty-slide"></div>-->
+    <div v-for="image in images" :key="image" class="image">{{ image }}</div>
+    <!--<div class="empty-slide"></div>-->
+  </ImageSlider>
 </template>
 
 <style>
