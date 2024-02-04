@@ -1,6 +1,12 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 
+const props = defineProps({
+  numItem: Number,
+})
+
+console.log(`numitem:${props.numItem}`)
+
 const validScrollMouse = ref(false)
 const validScrollTouch = ref(false)
 
@@ -140,6 +146,7 @@ let wheelEvent = () => {
         <slot></slot>
       </div>
     </div>
+    <button type="button" aria-hidden="false" class="paddlenav-arrow paddlenav-arrow-next"></button>
   </div>
 </template>
 

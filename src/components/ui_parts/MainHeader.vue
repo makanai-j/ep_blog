@@ -99,13 +99,13 @@ onUnmounted(() => {})
 
 <style>
 header {
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   width: 100%;
   height: 40px;
   display: flex;
-  margin: 0 0 10px 0;
+  margin: 0;
   background-color: rgb(80, 80, 80);
   z-index: 999;
 }

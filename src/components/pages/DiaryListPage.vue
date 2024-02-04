@@ -5,6 +5,6 @@ import ImageSlider from '../ui_parts/ImageSlider.vue'
 </script>
 
 <template>
+  <ImageSlider></ImageSlider>
   <DiaryList></DiaryList>
-  <ImageSlider> click </ImageSlider>
 </template>

@@ -7,7 +7,6 @@ import unescapeHtml from '../plugins/GlobalPlugin'
 const header = useRoute()
 
 let id = header.params.id
-console.log(id)
 
 const detailData = ref('')
 const isGetData = ref(true)
@@ -16,7 +15,6 @@ let getData = async () => {
   detailData.value = (await new GetData('diary', `select * from diaries where id_diary = ${id}`).fetchData()).data
   if (detailData.value != false) {
     let element = document.getElementById('detailContent')
-    console.log(unescapeHtml(detailData.value[0]['diary_content']))
     element.innerHTML = unescapeHtml(detailData.value[0]['diary_content'])
     return
   } else {
@@ -139,6 +137,7 @@ getData()
   z-index: -1;
 }
 .content {
+  text-align: left;
   font-family: 'kaiso', serif;
   padding: 40px;
 }
