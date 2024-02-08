@@ -8,8 +8,8 @@ const props = defineProps({
 })
 
 const count = defineModel('count')
+const isAutoSlide = defineModel('isAutoSlide')
 
-//const count = ref(0)
 const timeOutId = ref()
 
 let startScrollIndicator = (el) => {
@@ -19,16 +19,20 @@ let startScrollIndicator = (el) => {
 }
 
 let moveScrollIndicator = () => {
+  let circle = document.getElementById('circle')
   let target = document.getElementById('i-' + (count.value % props.chars.length))
   gsap.to(target, {
     rotate: 360,
     duration: props.time,
-    onComplete: () => {
+    onComplete: async () => {
       gsap.set(target, { rotate: '0rad' })
+      if (isAutoSlide.value) {
+        await count.value++
+        moveScrollIndicator()
+      }
     },
   })
-  count.value++
-  timeOutId.value = setTimeout(moveScrollIndicator, props.time * 1000)
+  //timeOutId.value = setTimeout(moveScrollIndicator, props.time * 1000)
 }
 
 let updateScrollIndicator = (index) => {
@@ -39,30 +43,47 @@ let updateScrollIndicator = (index) => {
 </script>
 
 <template>
-  <transition-group tag="div" name="outside-indicator" class="outside-indicator" appear @enter="startScrollIndicator">
-    <div v-for="(char, index) in chars" :key="index" class="indicator" :id="'i-' + index">
-      <button>{{ char }}</button>
-    </div>
-  </transition-group>
+  <div class="indicator-outer">
+    <div id="circle"></div>
+    <transition-group tag="div" class="indicator-group" appear @enter="startScrollIndicator">
+      <div v-for="(char, index) in chars" :key="index" class="indicator" :id="'i-' + index">
+        <button>{{ char }}</button>
+      </div>
+    </transition-group>
+  </div>
 </template>
 
 <style>
-.outside-indicator {
+.indicator-outer {
+  position: relative;
   display: flex;
   justify-content: center;
 }
 
-.indicator {
-  --indicatorSize: 35px;
-  text-align: center;
+#circle {
+  border-radius: 50%;
+  background: #aaa;
+  z-index: -1;
+}
+
+.indicator button,
+#circle {
   line-height: var(--indicatorSize);
   margin: var(--indicatorSize);
   width: var(--indicatorSize);
-  height: var(--indicatorSize);
+  height: var(--circleSize);
+}
+
+.indicator-group {
+  display: flex;
+  --indicatorSize: 35px;
+  justify-content: center;
+}
+
+.indicator button {
+  text-align: center;
   font-family: serif;
   font-weight: bold;
-  border-radius: 50%;
-  background: #aaa;
   color: black;
 }
 </style>

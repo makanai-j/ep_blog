@@ -1,20 +1,34 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
+import { ScrollToPlugin } from 'gsap/dist/ScrollToPlugin'
 
-const props = defineProps({
-  numItem: Number,
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
+
+const numberSlide = defineModel('numberSlide')
+const isAutoSlide = defineModel('isAutoSlide')
+
+watch(numberSlide, (newNum, oldNum) => {
+  if (isAutoSlide.value) {
+    adjustCenter(1)
+  }
 })
-
-console.log(`numitem:${props.numItem}`)
 
 const validScrollMouse = ref(false)
 const validScrollTouch = ref(false)
 
 const slides = ref(null)
 onMounted(() => {
-  for (let slide of slides.value.children) {
+  Array.from(slides.value.children).forEach((slide, index) => {
     slide.classList.add('slide')
-  }
+    if (index < slides.value.children.length / 2) {
+      slides.value.append(slide)
+    }
+  })
+
+  let centerNum = Math.floor(slides.value.children.length / 2)
+  gsap.to(slides.value, { duration: 0, scrollTo: slides.value.children[centerNum] })
 })
 
 let mouseX = -10
@@ -24,6 +38,14 @@ let spead = 0
 let wheelTimeout = null
 
 let scroll = (element) => {
+  getSpeed(element)
+}
+/*
+次：「(タッチイベントやマウスダウンイベントの開始地点から終了地点までの距離) > (スライド幅 / 2) 」の時に次のスライドへ移動
+
+あと、countのrefがある意味なくなってきたかも、ターゲットがずっと中心にいるようにすれば
+*/
+let getSpeed = (element) => {
   let x = 0
   if (element.type == 'mousemove') {
     x = element.clientX
@@ -41,10 +63,8 @@ let scroll = (element) => {
     }
     distanceX += diff
     spead = Math.floor((distanceX / elapsedTime) * 100)
-    //speadText.value = spead
     let leftOffset = Math.abs(slides.value.scrollLeft) + diff
     if (element.type == 'mousemove') {
-      //pcでのタッチスクロールに反応させるために必要でしたわ ↓
       slides.value.scrollTo(leftOffset, 0)
     }
   } else {
@@ -71,29 +91,39 @@ let adjustCenter = (place = 0) => {
   let slideElements = slides.value.children
   for (let element of slideElements) {
     let slidesOffsetCenter = slides.value.scrollLeft + windowOffsetCenter
-    let harfWidth = element.clientWidth / 2
+    //let harfWidth = element.clientWidth / 2
 
     if (element.offsetLeft <= slidesOffsetCenter && element.offsetLeft + element.clientWidth >= slidesOffsetCenter) {
-      let moveDistance = 0
+      let targetId = element.id
+      let num = Array.from(slideElements).indexOf(element)
 
-      if (place > 0) {
-        moveDistance = element.clientWidth
-      } else if (place < 0) {
-        moveDistance = -element.clientWidth
-      }
-      let lastElementLeft = element.clientWidth * (slideElements.length - 1)
-      let offsetWindowLeft = element.offsetLeft + harfWidth - windowOffsetCenter + moveDistance
-
-      if (slides.value.scrollLeft >= 0 && slides.value.scrollLeft <= lastElementLeft) {
-        slides.value.scrollTo({
-          left: offsetWindowLeft,
-          behavior: 'smooth',
-        })
+      if (place > 0 && num < slideElements.length - 1) {
+        targetId = slideElements[(num + 1) % slideElements.length].id
+      } else if (place < 0 && num > 0) {
+        targetId = slideElements[(num - 1) % slideElements.length].id
       }
 
+      gsap.to(slides.value, {
+        duration: 0.5,
+        scrollTo: { x: '#' + targetId },
+        onComplete: replaceImage,
+        onCompleteParams: [place],
+      })
       break
     }
   }
+}
+
+let replaceImage = (dist) => {
+  if (dist >= 0) {
+    slides.value.append(slides.value.children[0])
+  } else if (dist < 0) {
+    slides.value.prepend(slides.value.childre[slides.value.children.length - 1])
+  }
+  let centerNum = Math.floor(slides.value.children.length / 2)
+  gsap.to(slides.value, { duration: 0, scrollTo: slides.value.children[centerNum] })
+
+  isAutoSlide.value = true
 }
 
 let wheelEvent = () => {
@@ -110,15 +140,15 @@ let wheelEvent = () => {
 
 <template>
   <div class="slider-container">
-    <div class="slider" @scrollend="testText = 'slider'">
+    <div class="slider">
       <div
         ref="slides"
         class="slides"
         v-on="{
           mousedown: () => {
             if (!validScrollTouch) {
+              isAutoSlide = false
               validScrollMouse = true
-              console.log('mousedown')
             }
           },
           mouseup: validScrollMouse ? scrollCancel : undefined,
@@ -128,8 +158,8 @@ let wheelEvent = () => {
 
           touchstart: () => {
             if (!validScrollMouse) {
+              isAutoSlide = false
               validScrollTouch = true
-              console.log('touchstart')
             }
           },
           touchend: validScrollTouch ? scrollCancel : undefined,
@@ -146,7 +176,6 @@ let wheelEvent = () => {
         <slot></slot>
       </div>
     </div>
-    <button type="button" aria-hidden="false" class="paddlenav-arrow paddlenav-arrow-next"></button>
   </div>
 </template>
 
