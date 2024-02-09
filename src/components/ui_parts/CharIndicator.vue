@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { gsap } from 'gsap'
 
 const props = defineProps({
@@ -7,29 +7,29 @@ const props = defineProps({
   chars: [String],
 })
 
-const count = defineModel('count')
-const isAutoSlide = defineModel('isAutoSlide')
+const centerSlide = defineModel('centerSlide')
+
+watch(centerSlide, (newId) => {
+  console.log(newId)
+})
 
 const timeOutId = ref()
+const timeLine = ref()
 
 let startScrollIndicator = (el) => {
   if ('i-' + (props.chars.length - 1) == el.id) {
-    moveScrollIndicator()
+    //moveScrollIndicator()
   }
 }
 
-let moveScrollIndicator = () => {
+let moveScrollIndicator = (targetId) => {
   let circle = document.getElementById('circle')
-  let target = document.getElementById('i-' + (count.value % props.chars.length))
+  let target = document.getElementById(targetId)
   gsap.to(target, {
     rotate: 360,
     duration: props.time,
     onComplete: async () => {
       gsap.set(target, { rotate: '0rad' })
-      if (isAutoSlide.value) {
-        await count.value++
-        moveScrollIndicator()
-      }
     },
   })
   //timeOutId.value = setTimeout(moveScrollIndicator, props.time * 1000)
@@ -46,7 +46,7 @@ let updateScrollIndicator = (index) => {
   <div class="indicator-outer">
     <div id="circle"></div>
     <transition-group tag="div" class="indicator-group" appear @enter="startScrollIndicator">
-      <div v-for="(char, index) in chars" :key="index" class="indicator" :id="'i-' + index">
+      <div v-for="(char, index) in chars" :key="index" class="indicator" :id="'image-' + index + '-indicator'">
         <button>{{ char }}</button>
       </div>
     </transition-group>
@@ -68,22 +68,26 @@ let updateScrollIndicator = (index) => {
 
 .indicator button,
 #circle {
-  line-height: var(--indicatorSize);
-  margin: var(--indicatorSize);
+  margin: 2vw;
   width: var(--indicatorSize);
+  max-width: 15vw;
   height: var(--circleSize);
+  max-height: 15vw;
 }
 
 .indicator-group {
   display: flex;
   --indicatorSize: 35px;
   justify-content: center;
+  overflow-wrap: normal;
 }
 
 .indicator button {
+  font-size: 15px;
   text-align: center;
   font-family: serif;
   font-weight: bold;
   color: black;
+  border: none;
 }
 </style>

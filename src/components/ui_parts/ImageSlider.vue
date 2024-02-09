@@ -1,25 +1,22 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
 import { ScrollToPlugin } from 'gsap/dist/ScrollToPlugin'
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
-const numberSlide = defineModel('numberSlide')
-const isAutoSlide = defineModel('isAutoSlide')
-
-watch(numberSlide, (newNum, oldNum) => {
-  if (isAutoSlide.value) {
-    adjustCenter(1)
-  }
-})
+const centerSlide = defineModel('centerSlide')
 
 const validScrollMouse = ref(false)
 const validScrollTouch = ref(false)
 
+const intervalId = ref()
+
 const slides = ref(null)
-onMounted(() => {
+
+onMounted(async () => {
+  /*
   Array.from(slides.value.children).forEach((slide, index) => {
     slide.classList.add('slide')
     if (index < slides.value.children.length / 2) {
@@ -29,15 +26,54 @@ onMounted(() => {
 
   let centerNum = Math.floor(slides.value.children.length / 2)
   gsap.to(slides.value, { duration: 0, scrollTo: slides.value.children[centerNum] })
+  autoSlide()
+  
+  await nextTick(() => {
+    console.log(slides.value.children.length)
+    Array.from(slides.value.children).forEach((slide, index) => {
+      slide.classList.add('slide')
+      console.log(slide)
+      if (index < slides.value.children.length / 2) {
+        slides.value.append(slide)
+        console.log(slide)
+      }
+    })
+
+    let centerNum = Math.floor(slides.value.children.length / 2)
+    gsap.to(slides.value, { duration: 0, scrollTo: slides.value.children[centerNum] })
+    autoSlide()
+  })*/
 })
+
+let onMountedCustom = async (e) => {
+  console.log(e)
+  /*
+
+
+ここから
+どうにかして、以下のイベントを v-for の最後の要素がマウントされたときに発火させるようにする
+
+
+  Array.from(slides.value.children).forEach((slide, index) => {
+    slide.classList.add('slide')
+    if (index < slides.value.children.length / 2) {
+      slides.value.append(slide)
+    }
+  })
+
+  let centerNum = Math.floor(slides.value.children.length / 2)
+  gsap.to(slides.value, { duration: 0, scrollTo: slides.value.children[centerNum] })
+  autoSlide()*/
+}
 
 let mouseX = -10
 let startTime = 0
 let distanceX = 0
 let spead = 0
-let wheelTimeout = null
 
 let scroll = (element) => {
+  clearInterval(intervalId.value)
+  intervalId.value = null
   getSpeed(element)
 }
 /*
@@ -64,7 +100,7 @@ let getSpeed = (element) => {
     distanceX += diff
     spead = Math.floor((distanceX / elapsedTime) * 100)
     let leftOffset = Math.abs(slides.value.scrollLeft) + diff
-    if (element.type == 'mousemove') {
+    if (element.type == 'mousemove' || element.type == 'touchmove') {
       slides.value.scrollTo(leftOffset, 0)
     }
   } else {
@@ -74,7 +110,8 @@ let getSpeed = (element) => {
 }
 
 let scrollCancel = () => {
-  if (Math.abs(spead) > 200) {
+  let windowOffsetCenter = window.innerWidth / 2
+  if (Math.abs(spead) > 200 && windowOffsetCenter > Math.abs(distanceX)) {
     adjustCenter(spead)
   } else {
     adjustCenter()
@@ -86,12 +123,17 @@ let scrollCancel = () => {
   mouseX = -10
 }
 
+let autoSlide = () => {
+  intervalId.value = setInterval(() => {
+    adjustCenter(1)
+  }, 6000)
+}
+
 let adjustCenter = (place = 0) => {
   let windowOffsetCenter = window.innerWidth / 2
   let slideElements = slides.value.children
   for (let element of slideElements) {
     let slidesOffsetCenter = slides.value.scrollLeft + windowOffsetCenter
-    //let harfWidth = element.clientWidth / 2
 
     if (element.offsetLeft <= slidesOffsetCenter && element.offsetLeft + element.clientWidth >= slidesOffsetCenter) {
       let targetId = element.id
@@ -106,8 +148,16 @@ let adjustCenter = (place = 0) => {
       gsap.to(slides.value, {
         duration: 0.5,
         scrollTo: { x: '#' + targetId },
-        onComplete: replaceImage,
-        onCompleteParams: [place],
+        onComplete: (dist, targetId) => {
+          replaceImage(dist)
+
+          if (intervalId.value == null) {
+            autoSlide()
+          }
+
+          centerSlide.value = targetId
+        },
+        onCompleteParams: [place, targetId],
       })
       break
     }
@@ -115,26 +165,13 @@ let adjustCenter = (place = 0) => {
 }
 
 let replaceImage = (dist) => {
-  if (dist >= 0) {
+  if (dist > 0) {
     slides.value.append(slides.value.children[0])
   } else if (dist < 0) {
-    slides.value.prepend(slides.value.childre[slides.value.children.length - 1])
+    slides.value.prepend(slides.value.children[slides.value.children.length - 1])
   }
   let centerNum = Math.floor(slides.value.children.length / 2)
   gsap.to(slides.value, { duration: 0, scrollTo: slides.value.children[centerNum] })
-
-  isAutoSlide.value = true
-}
-
-let wheelEvent = () => {
-  if (!validScrollMouse.value && !validScrollTouch.value) {
-    if (wheelTimeout) {
-      clearTimeout(wheelTimeout)
-    }
-    wheelTimeout = setTimeout(() => {
-      scrollCancel()
-    }, 100)
-  }
 }
 </script>
 
@@ -147,7 +184,6 @@ let wheelEvent = () => {
         v-on="{
           mousedown: () => {
             if (!validScrollTouch) {
-              isAutoSlide = false
               validScrollMouse = true
             }
           },
@@ -158,7 +194,6 @@ let wheelEvent = () => {
 
           touchstart: () => {
             if (!validScrollMouse) {
-              isAutoSlide = false
               validScrollTouch = true
             }
           },
@@ -166,14 +201,14 @@ let wheelEvent = () => {
           touchCancel: validScrollTouch ? scrollCancel : undefined,
           touchmove: validScrollTouch ? scroll : undefined,
 
-          wheel: wheelEvent,
-
           selectstart: (e) => {
             e.preventDefault()
           },
         }"
       >
-        <slot></slot>
+        <transition-group appear @after-enter="onMountedCustom">
+          <slot></slot>
+        </transition-group>
       </div>
     </div>
   </div>
@@ -186,7 +221,7 @@ let wheelEvent = () => {
 .slides {
   display: flex;
   position: relative;
-  overflow-x: scroll;
+  overflow-x: hidden;
   -ms-overflow-style: none;
 }
 .slides::-webkit-scrollbar {

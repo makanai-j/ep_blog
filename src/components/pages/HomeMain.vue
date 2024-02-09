@@ -9,10 +9,7 @@ import CharIndicator from '../ui_parts/CharIndicator.vue'
 const numItem = 5
 const images = ref([])
 
-const numberSlide = ref(0)
-const isAutoSlide = ref(true)
-
-watch(numberSlide, (newNum, oldNum) => {})
+const centerSlide = ref(0)
 
 const chars = ref([])
 let getData = async () => {
@@ -34,14 +31,14 @@ getData()
 </script>
 
 <template>
-  <ImageSlider v-model:numberSlide="numberSlide" v-model:isAutoSlide="isAutoSlide">
-    <div v-for="(image, index) in [0, 1, 2, 3, 4]" :key="image" class="image" :id="'image-' + index">
+  <ImageSlider v-model:centerSlide="centerSlide">
+    <div v-for="(image, index) in images" :key="image" class="image" :id="'image-' + index">
       <router-link :to="'/diary/' + image['id_diary']" style="text-decoration: none" tabindex="-1" draggable="false">
-        <div id="diary-image" :style="{ 'background-image': 'url(' + image['diary_image'] + ')' }">{{ image }}</div>
+        <div id="diary-image" :style="{ 'background-image': 'url(' + image['diary_image'] + ')' }"></div>
       </router-link>
     </div>
   </ImageSlider>
-  <CharIndicator :time="5" :chars="chars" v-model:count="numberSlide" v-model:isAutoSlide="isAutoSlide"></CharIndicator>
+  <CharIndicator :time="5" :chars="chars" v-model:centerSlide="centerSlide"></CharIndicator>
   <TopicCard>
     <template #title> </template>
     <template #content></template>
