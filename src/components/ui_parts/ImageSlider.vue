@@ -1,10 +1,18 @@
 <script setup>
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { onUnmounted, ref, computed } from 'vue'
+import { onBeforeRouteLeave } from 'vue-router'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
 import { ScrollToPlugin } from 'gsap/dist/ScrollToPlugin'
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
+
+const props = defineProps({
+  numItems: {
+    type: Number,
+    required: true,
+  },
+})
 
 const centerSlide = defineModel('centerSlide')
 
@@ -15,78 +23,46 @@ const intervalId = ref()
 
 const slides = ref(null)
 
-onMounted(async () => {
-  /*
-  Array.from(slides.value.children).forEach((slide, index) => {
-    slide.classList.add('slide')
-    if (index < slides.value.children.length / 2) {
-      slides.value.append(slide)
-    }
-  })
-
-  let centerNum = Math.floor(slides.value.children.length / 2)
-  gsap.to(slides.value, { duration: 0, scrollTo: slides.value.children[centerNum] })
-  autoSlide()
-  
-  await nextTick(() => {
-    console.log(slides.value.children.length)
+let count = 0
+let onMountedCustom = async (e) => {
+  count++
+  if (count >= props.numItems) {
     Array.from(slides.value.children).forEach((slide, index) => {
       slide.classList.add('slide')
-      console.log(slide)
       if (index < slides.value.children.length / 2) {
         slides.value.append(slide)
-        console.log(slide)
       }
     })
 
     let centerNum = Math.floor(slides.value.children.length / 2)
     gsap.to(slides.value, { duration: 0, scrollTo: slides.value.children[centerNum] })
     autoSlide()
-  })*/
-})
-
-let onMountedCustom = async (e) => {
-  console.log(e)
-  /*
-
-
-ここから
-どうにかして、以下のイベントを v-for の最後の要素がマウントされたときに発火させるようにする
-
-
-  Array.from(slides.value.children).forEach((slide, index) => {
-    slide.classList.add('slide')
-    if (index < slides.value.children.length / 2) {
-      slides.value.append(slide)
-    }
-  })
-
-  let centerNum = Math.floor(slides.value.children.length / 2)
-  gsap.to(slides.value, { duration: 0, scrollTo: slides.value.children[centerNum] })
-  autoSlide()*/
+  }
 }
+
+onUnmounted(() => {
+  clearInterval(intervalId.value)
+  if (intervalId.value) intervalId.value = null
+})
 
 let mouseX = -10
 let startTime = 0
 let distanceX = 0
+const totalDistanceX = ref(0)
 let spead = 0
 
-let scroll = (element) => {
+let scroll = (e) => {
   clearInterval(intervalId.value)
-  intervalId.value = null
-  getSpeed(element)
+  if (intervalId.value) intervalId.value = null
+  getSpeed(e)
 }
-/*
-次：「(タッチイベントやマウスダウンイベントの開始地点から終了地点までの距離) > (スライド幅 / 2) 」の時に次のスライドへ移動
 
-あと、countのrefがある意味なくなってきたかも、ターゲットがずっと中心にいるようにすれば
-*/
-let getSpeed = (element) => {
+let getSpeed = (e) => {
   let x = 0
-  if (element.type == 'mousemove') {
-    x = element.clientX
-  } else if (element.type == 'touchmove') {
-    x = element.changedTouches[0].pageX
+  if (e.type == 'mousemove') {
+    x = e.clientX
+  } else if (e.type == 'touchmove') {
+    x = e.changedTouches[0].pageX
   }
 
   if (mouseX > 0) {
@@ -98,9 +74,10 @@ let getSpeed = (element) => {
       elapsedTime = 1
     }
     distanceX += diff
+    totalDistanceX.value += diff
     spead = Math.floor((distanceX / elapsedTime) * 100)
     let leftOffset = Math.abs(slides.value.scrollLeft) + diff
-    if (element.type == 'mousemove' || element.type == 'touchmove') {
+    if (e.type == 'mousemove' || e.type == 'touchmove') {
       slides.value.scrollTo(leftOffset, 0)
     }
   } else {
@@ -109,9 +86,10 @@ let getSpeed = (element) => {
   mouseX = x
 }
 
-let scrollCancel = () => {
-  let windowOffsetCenter = window.innerWidth / 2
-  if (Math.abs(spead) > 200 && windowOffsetCenter > Math.abs(distanceX)) {
+let scrollCancel = async (e) => {
+  e.preventDefault()
+  if (totalDistanceX.value < 2) return
+  if (Math.abs(spead) > 200) {
     adjustCenter(spead)
   } else {
     adjustCenter()
@@ -123,6 +101,15 @@ let scrollCancel = () => {
   mouseX = -10
 }
 
+onBeforeRouteLeave((to, from, next) => {
+  console.log('onBeforeRouteLeave')
+  if (Math.abs(totalDistanceX.value) < 2) {
+    next()
+  } else {
+    next(false)
+  }
+})
+
 let autoSlide = () => {
   intervalId.value = setInterval(() => {
     adjustCenter(1)
@@ -130,6 +117,7 @@ let autoSlide = () => {
 }
 
 let adjustCenter = (place = 0) => {
+  console.log('adjustCenter')
   let windowOffsetCenter = window.innerWidth / 2
   let slideElements = slides.value.children
   for (let element of slideElements) {
@@ -151,10 +139,11 @@ let adjustCenter = (place = 0) => {
         onComplete: (dist, targetId) => {
           replaceImage(dist)
 
-          if (intervalId.value == null) {
+          if (intervalId.value === null) {
             autoSlide()
           }
 
+          totalDistanceX.value = 0
           centerSlide.value = targetId
         },
         onCompleteParams: [place, targetId],

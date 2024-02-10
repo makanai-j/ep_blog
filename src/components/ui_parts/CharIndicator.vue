@@ -3,15 +3,12 @@ import { ref, watch } from 'vue'
 import { gsap } from 'gsap'
 
 const props = defineProps({
-  time: Number,
   chars: [String],
 })
 
 const centerSlide = defineModel('centerSlide')
 
-watch(centerSlide, (newId) => {
-  console.log(newId)
-})
+watch(centerSlide, (newId) => {})
 
 const timeOutId = ref()
 const timeLine = ref()
@@ -27,7 +24,7 @@ let moveScrollIndicator = (targetId) => {
   let target = document.getElementById(targetId)
   gsap.to(target, {
     rotate: 360,
-    duration: props.time,
+    duration: 5,
     onComplete: async () => {
       gsap.set(target, { rotate: '0rad' })
     },

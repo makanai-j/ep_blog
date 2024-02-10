@@ -31,14 +31,14 @@ getData()
 </script>
 
 <template>
-  <ImageSlider v-model:centerSlide="centerSlide">
+  <ImageSlider :numItems="images.length" v-model:centerSlide="centerSlide">
     <div v-for="(image, index) in images" :key="image" class="image" :id="'image-' + index">
       <router-link :to="'/diary/' + image['id_diary']" style="text-decoration: none" tabindex="-1" draggable="false">
         <div id="diary-image" :style="{ 'background-image': 'url(' + image['diary_image'] + ')' }"></div>
       </router-link>
     </div>
   </ImageSlider>
-  <CharIndicator :time="5" :chars="chars" v-model:centerSlide="centerSlide"></CharIndicator>
+  <CharIndicator :chars="chars" v-model:centerSlide="centerSlide"></CharIndicator>
   <TopicCard>
     <template #title> </template>
     <template #content></template>
@@ -58,7 +58,7 @@ getData()
 .image #diary-image {
   object-fit: cover;
   width: 100vw;
-  height: 49.5vh;
+  height: 50vh;
 }
 .empty-slide {
   width: calc((100% - var(--slideWidth)) / 2);
