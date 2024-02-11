@@ -4,12 +4,9 @@ import GetData from '../../data_base/GetData'
 import DiaryList from '../ui_parts/DiaryList.vue'
 import ImageSlider from '../ui_parts/ImageSlider.vue'
 import TopicCard from '../ui_parts/TopicCard.vue'
-import CharIndicator from '../ui_parts/CharIndicator.vue'
 
 const numItem = 5
 const images = ref([])
-
-const centerSlide = ref(0)
 
 const chars = ref([])
 let getData = async () => {
@@ -31,14 +28,13 @@ getData()
 </script>
 
 <template>
-  <ImageSlider :numItems="images.length" v-model:centerSlide="centerSlide">
+  <ImageSlider :numItems="images.length">
     <div v-for="(image, index) in images" :key="image" class="image" :id="'image-' + index">
       <router-link :to="'/diary/' + image['id_diary']" style="text-decoration: none" tabindex="-1" draggable="false">
         <div id="diary-image" :style="{ 'background-image': 'url(' + image['diary_image'] + ')' }"></div>
       </router-link>
     </div>
   </ImageSlider>
-  <CharIndicator :chars="chars" v-model:centerSlide="centerSlide"></CharIndicator>
   <TopicCard>
     <template #title> </template>
     <template #content></template>

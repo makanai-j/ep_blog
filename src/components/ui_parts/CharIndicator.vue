@@ -1,52 +1,30 @@
 <script setup>
-import { ref, watch } from 'vue'
-import { gsap } from 'gsap'
+import { computed, nextTick, onMounted } from 'vue'
 
 const props = defineProps({
-  chars: [String],
+  numItems: {
+    type: Number,
+    required: true,
+  },
 })
 
 const centerSlide = defineModel('centerSlide')
 
-watch(centerSlide, (newId) => {})
-
-const timeOutId = ref()
-const timeLine = ref()
-
-let startScrollIndicator = (el) => {
-  if ('i-' + (props.chars.length - 1) == el.id) {
-    //moveScrollIndicator()
-  }
-}
-
-let moveScrollIndicator = (targetId) => {
-  let circle = document.getElementById('circle')
-  let target = document.getElementById(targetId)
-  gsap.to(target, {
-    rotate: 360,
-    duration: 5,
-    onComplete: async () => {
-      gsap.set(target, { rotate: '0rad' })
-    },
+const epArray = computed(() => {
+  return Array.from(Array(props.numItems), (_, i) => {
+    return 'image-' + i == centerSlide.value ? 'p' : 'e'
   })
-  //timeOutId.value = setTimeout(moveScrollIndicator, props.time * 1000)
-}
-
-let updateScrollIndicator = (index) => {
-  clearTimeout(timeOutId.value)
-  count.value = index
-  timeOutId.value = setTimeout(moveScrollIndicator, props.time * 1000)
-}
+})
 </script>
 
 <template>
   <div class="indicator-outer">
     <div id="circle"></div>
-    <transition-group tag="div" class="indicator-group" appear @enter="startScrollIndicator">
-      <div v-for="(char, index) in chars" :key="index" class="indicator" :id="'image-' + index + '-indicator'">
-        <button>{{ char }}</button>
+    <div class="indicator-group">
+      <div v-for="(char, index) in epArray" :key="index" class="indicator" :id="'image-' + index + '-indicator'">
+        <button style="border: none" @click="$emit('adjustCenter', 'image-' + index)">{{ char }}</button>
       </div>
-    </transition-group>
+    </div>
   </div>
 </template>
 
@@ -71,7 +49,6 @@ let updateScrollIndicator = (index) => {
   height: var(--circleSize);
   max-height: 15vw;
 }
-
 .indicator-group {
   display: flex;
   --indicatorSize: 35px;
@@ -86,5 +63,6 @@ let updateScrollIndicator = (index) => {
   font-weight: bold;
   color: black;
   border: none;
+  outline: none;
 }
 </style>

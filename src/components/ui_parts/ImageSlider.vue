@@ -4,6 +4,7 @@ import { onBeforeRouteLeave } from 'vue-router'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
 import { ScrollToPlugin } from 'gsap/dist/ScrollToPlugin'
+import CharIndicator from '../ui_parts/CharIndicator.vue'
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
@@ -14,7 +15,7 @@ const props = defineProps({
   },
 })
 
-const centerSlide = defineModel('centerSlide')
+const centerSlide = ref('')
 
 const validScrollMouse = ref(false)
 const validScrollTouch = ref(false)
@@ -26,13 +27,21 @@ const slides = ref(null)
 let count = 0
 let onMountedCustom = async (e) => {
   count++
+  console.log(e.key)
   if (count >= props.numItems) {
+    /*
     Array.from(slides.value.children).forEach((slide, index) => {
+      if (index == 0) {
+        centerSlide.value = slide.id
+      }
       slide.classList.add('slide')
       if (index < slides.value.children.length / 2) {
         slides.value.append(slide)
       }
     })
+    */
+    adjustCenterById('image-0', 0)
+    centerSlide.value = 'image-0'
 
     let centerNum = Math.floor(slides.value.children.length / 2)
     gsap.to(slides.value, { duration: 0, scrollTo: slides.value.children[centerNum] })
@@ -88,7 +97,7 @@ let getSpeed = (e) => {
 
 let scrollCancel = async (e) => {
   e.preventDefault()
-  if (totalDistanceX.value < 2) return
+  if (Math.abs(totalDistanceX.value) < 2) return
   if (Math.abs(spead) > 200) {
     adjustCenter(spead)
   } else {
@@ -102,7 +111,6 @@ let scrollCancel = async (e) => {
 }
 
 onBeforeRouteLeave((to, from, next) => {
-  console.log('onBeforeRouteLeave')
   if (Math.abs(totalDistanceX.value) < 2) {
     next()
   } else {
@@ -116,28 +124,29 @@ let autoSlide = () => {
   }, 6000)
 }
 
-let adjustCenter = (place = 0) => {
-  console.log('adjustCenter')
+let adjustCenter = (place = 0, duration = 0.5) => {
   let windowOffsetCenter = window.innerWidth / 2
   let slideElements = slides.value.children
-  for (let element of slideElements) {
+  let slideLen = slideElements.length
+  for (let index = 0; index < slideLen; index++) {
+    let element = slideElements[index]
     let slidesOffsetCenter = slides.value.scrollLeft + windowOffsetCenter
-
     if (element.offsetLeft <= slidesOffsetCenter && element.offsetLeft + element.clientWidth >= slidesOffsetCenter) {
       let targetId = element.id
-      let num = Array.from(slideElements).indexOf(element)
 
-      if (place > 0 && num < slideElements.length - 1) {
-        targetId = slideElements[(num + 1) % slideElements.length].id
-      } else if (place < 0 && num > 0) {
-        targetId = slideElements[(num - 1) % slideElements.length].id
+      if (place > 0 && index < slideElements.length - 1) {
+        targetId = slideElements[(index + 1) % slideLen].id
+        index++
+      } else if (place < 0 && index > 0) {
+        targetId = slideElements[(index - 1) % slideLen].id
+        index--
       }
 
       gsap.to(slides.value, {
-        duration: 0.5,
+        duration: duration,
         scrollTo: { x: '#' + targetId },
-        onComplete: (dist, targetId) => {
-          replaceImage(dist)
+        onComplete: (targetId, index) => {
+          replaceImage(index)
 
           if (intervalId.value === null) {
             autoSlide()
@@ -146,20 +155,59 @@ let adjustCenter = (place = 0) => {
           totalDistanceX.value = 0
           centerSlide.value = targetId
         },
-        onCompleteParams: [place, targetId],
+        onCompleteParams: [targetId, index],
       })
+
       break
     }
   }
 }
 
-let replaceImage = (dist) => {
-  if (dist > 0) {
-    slides.value.append(slides.value.children[0])
-  } else if (dist < 0) {
-    slides.value.prepend(slides.value.children[slides.value.children.length - 1])
+let adjustCenterById = (id, duration = 0.5) => {
+  let index = Array.from(slides.value.children)
+    .map((e) => e.id)
+    .indexOf(id)
+  gsap.to(slides.value, {
+    duration: duration,
+    scrollTo: { x: '#' + id },
+    onComplete: (targetId, index) => {
+      replaceImage(index)
+
+      if (intervalId.value === null) {
+        autoSlide()
+      }
+
+      totalDistanceX.value = 0
+      centerSlide.value = targetId
+    },
+    onCompleteParams: [id, index],
+  })
+}
+/*
+let replaceImage = (index) => {
+  let slideLen = slides.value.children.length
+  let centerNum = Math.floor(slideLen / 2)
+  for (let i = index; i != centerNum; i += i < centerNum ? 1 : -1) {
+    if (i < )
+    if (i > centerNum) {
+      slides.value.append(slides.value.children[0])
+    } else {
+      slides.value.prepend(slides.value.children[slideLen - 1])
+    }
   }
-  let centerNum = Math.floor(slides.value.children.length / 2)
+  gsap.to(slides.value, { duration: 0, scrollTo: slides.value.children[centerNum] })
+}
+*/
+let replaceImage = (index) => {
+  let slideLen = slides.value.children.length
+  let centerNum = Math.floor(slideLen / 2)
+  for (let i = index; i != centerNum; i += i < centerNum ? 1 : -1) {
+    if (i > centerNum) {
+      slides.value.append(slides.value.children[0])
+    } else {
+      slides.value.prepend(slides.value.children[slideLen - 1])
+    }
+  }
   gsap.to(slides.value, { duration: 0, scrollTo: slides.value.children[centerNum] })
 }
 </script>
@@ -201,6 +249,11 @@ let replaceImage = (dist) => {
       </div>
     </div>
   </div>
+  <CharIndicator
+    :numItems="numItems"
+    @adjust-center="adjustCenterById"
+    v-model:centerSlide="centerSlide"
+  ></CharIndicator>
 </template>
 
 <style>
