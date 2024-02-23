@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import DiaryTitleAndTagList from './DiaryTitleAndTagList.vue'
 import GetData from '../../data_base/GetData'
@@ -14,10 +14,8 @@ const id = ref(header.params.id)
 
 let query = ''
 if (typeof id.value === 'string' && id.value != '') {
-  console.log('id')
   query = `select * from diaries where id_diary in (select id_diary from links where id_tag in (select id_tag from tags where tag = '${id.value}'))`
 } else {
-  console.log('no id')
   query = 'select * from diaries'
 }
 
@@ -51,8 +49,6 @@ let getData = async () => {
       tagsGroupData.value[key] = [tag]
     }
   })
-
-  console.log(tagsGroupData.value)
 }
 //実行
 getData()

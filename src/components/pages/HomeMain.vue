@@ -29,7 +29,7 @@ getData()
 
 <template>
   <ImageSlider :numItems="images.length">
-    <div v-for="(image, index) in images" :key="image" class="image" :id="'image-' + index">
+    <div v-for="(image, index) in images" :key="index" class="image">
       <router-link :to="'/diary/' + image['id_diary']" style="text-decoration: none" tabindex="-1" draggable="false">
         <div id="diary-image" :style="{ 'background-image': 'url(' + image['diary_image'] + ')' }"></div>
       </router-link>
@@ -43,20 +43,12 @@ getData()
 </template>
 
 <style>
-:root {
-  --slideWidth: 100%;
-}
 .image {
-  width: 100vw;
-  height: 50vh;
   background: none;
 }
 .image #diary-image {
-  object-fit: cover;
-  width: 100vw;
+  width: 70vw;
   height: 50vh;
-}
-.empty-slide {
-  width: calc((100% - var(--slideWidth)) / 2);
+  object-fit: cover;
 }
 </style>

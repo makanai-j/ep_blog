@@ -8,9 +8,9 @@ let setScrollbarWidth = () => {
   document.documentElement.style.setProperty('--scrollbarWidth', `${width}px`)
   console.log(width)
 }
-setScrollbarWidth()
+//setScrollbarWidth()
 window.addEventListener('resize', () => {
-  setScrollbarWidth()
+  //setScrollbarWidth()
 })
 </script>
 
@@ -31,7 +31,8 @@ window.addEventListener('resize', () => {
   src: url('../NotoSerifJP-Regular_.woff');
 }
 .main {
-  width: calc(100vw - var(--scrollbarWidth));
+  /*width: calc(100vw - var(--scrollbarWidth));*/
+  width: 100vw;
 }
 .router-link-active {
   font-weight: bold;

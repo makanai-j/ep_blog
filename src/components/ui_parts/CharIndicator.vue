@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, onMounted } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   numItems: {
@@ -9,20 +9,16 @@ const props = defineProps({
 })
 
 const centerSlide = defineModel('centerSlide')
-
-const epArray = computed(() => {
-  return Array.from(Array(props.numItems), (_, i) => {
-    return 'image-' + i == centerSlide.value ? 'p' : 'e'
-  })
-})
 </script>
 
 <template>
   <div class="indicator-outer">
     <div id="circle"></div>
     <div class="indicator-group">
-      <div v-for="(char, index) in epArray" :key="index" class="indicator" :id="'image-' + index + '-indicator'">
-        <button style="border: none" @click="$emit('adjustCenter', 'image-' + index)">{{ char }}</button>
+      <div v-for="index in numItems" :key="index" class="indicator">
+        <button style="border: none" @click="$emit('adjustCenter', index)">
+          {{ index - 1 == centerSlide ? 'p' : 'e' }}
+        </button>
       </div>
     </div>
   </div>
