@@ -5,7 +5,7 @@ import DiaryList from '../ui_parts/DiaryList.vue'
 import ImageSlider from '../ui_parts/ImageSlider.vue'
 import TopicCard from '../ui_parts/TopicCard.vue'
 
-const numItem = 5
+const numItem = 7
 const images = ref([])
 
 const chars = ref([])
@@ -31,7 +31,7 @@ getData()
   <ImageSlider :numItems="images.length">
     <div v-for="(image, index) in images" :key="index" class="image">
       <router-link :to="'/diary/' + image['id_diary']" style="text-decoration: none" tabindex="-1" draggable="false">
-        <div id="diary-image" :style="{ 'background-image': 'url(' + image['diary_image'] + ')' }"></div>
+        <div class="diary-image" :style="{ 'background-image': 'url(' + image['diary_image'] + ')' }"></div>
       </router-link>
     </div>
   </ImageSlider>
@@ -45,8 +45,9 @@ getData()
 <style>
 .image {
   background: none;
+  margin: 2vw;
 }
-.image #diary-image {
+.image .diary-image {
   width: 70vw;
   height: 50vh;
   object-fit: cover;

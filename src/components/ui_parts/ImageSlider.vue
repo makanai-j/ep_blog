@@ -19,11 +19,11 @@ const centerSlide = ref(0)
 
 let slidesClassName = []
 
+const validScroll = ref(true)
 const validScrollMouse = ref(false)
 const validScrollTouch = ref(false)
 
 const intervalId = ref()
-var resizeTimeout = null
 
 const slides = ref(null)
 
@@ -63,6 +63,7 @@ const totalDistanceX = ref(0)
 let spead = 0
 
 let scroll = (e) => {
+  if (!validScroll.value) return
   clearInterval(intervalId.value)
   if (intervalId.value) intervalId.value = null
   getSpeed(e)
@@ -89,6 +90,7 @@ let getSpeed = (e) => {
     spead = Math.floor((distanceX / elapsedTime) * 100)
     let leftOffset = Math.abs(slides.value.scrollLeft) + diff
     if (e.type == 'mousemove' || e.type == 'touchmove') {
+      e.preventDefault()
       slides.value.scrollTo(leftOffset, 0)
     }
   } else {
@@ -97,13 +99,14 @@ let getSpeed = (e) => {
   mouseX = x
 }
 
-let scrollCancel = async (e) => {
-  e.preventDefault()
-  if (Math.abs(totalDistanceX.value) < 2) return
-  if (Math.abs(spead) > 200) {
-    adjustCenter(spead)
-  } else {
-    adjustCenter()
+let scrollCancel = (e) => {
+  //e.preventDefault()
+  if (Math.abs(totalDistanceX.value) > 1) {
+    if (Math.abs(spead) > 200) {
+      adjustCenter(spead)
+    } else {
+      adjustCenter()
+    }
   }
 
   spead = 0
@@ -133,6 +136,26 @@ let getSlidesClassName = (node) => {
   return classList[0]
 }
 
+let gsapScrollTo = (target, duration, onCompParas) => {
+  validScroll.value = false
+  gsap.to(slides.value, {
+    duration: duration,
+    scrollTo: { x: target, offsetX: slideOffsetX(slides.value.children[0]) },
+    onComplete: (className, index) => {
+      replaceImage(index)
+
+      if (intervalId.value === null) {
+        autoSlide()
+      }
+
+      validScroll.value = true
+      totalDistanceX.value = 0
+      centerSlide.value = slidesClassName.indexOf(className)
+    },
+    onCompleteParams: onCompParas,
+  })
+}
+
 let adjustCenter = (place = 0, duration = 0.5) => {
   let windowOffsetCenter = window.innerWidth / 2
   let slideElements = slides.value.children
@@ -140,9 +163,9 @@ let adjustCenter = (place = 0, duration = 0.5) => {
   for (let index = 0; index < slideLen; index++) {
     let element = slideElements[index]
     let slidesOffsetCenter = slides.value.scrollLeft + windowOffsetCenter
-    if (element.offsetLeft <= slidesOffsetCenter && element.offsetLeft + element.clientWidth >= slidesOffsetCenter) {
+    if (element.offsetLeft + element.clientWidth >= slidesOffsetCenter) {
       let targetClassName = getSlidesClassName(element)
-
+      console.log(targetClassName)
       if (place > 0 && index < slideElements.length - 1) {
         targetClassName = getSlidesClassName(slideElements[(index + 1) % slideLen])
         index++
@@ -151,29 +174,11 @@ let adjustCenter = (place = 0, duration = 0.5) => {
         index--
       }
 
-      gsapScrollTo('.' + targetClassName, duration, [targetClassName, index], (className, index) => {
-        replaceImage(index)
-
-        if (intervalId.value === null) {
-          autoSlide()
-        }
-
-        totalDistanceX.value = 0
-        centerSlide.value = slidesClassName.indexOf(className)
-      })
+      gsapScrollTo('.' + targetClassName, duration, [targetClassName, index])
 
       break
     }
   }
-}
-
-let gsapScrollTo = (target, duration, onCompParas, onCompFunc) => {
-  gsap.to(slides.value, {
-    duration: duration,
-    scrollTo: { x: target, offsetX: slideOffsetX(slides.value.children[0]) },
-    onComplete: onCompFunc,
-    onCompleteParams: onCompParas,
-  })
 }
 
 let adjustCenterByClassName = (className, duration = 0.5) => {
@@ -183,16 +188,7 @@ let adjustCenterByClassName = (className, duration = 0.5) => {
       index = i
     }
   })
-  gsapScrollTo('.' + className, duration, [className, index], (className, index) => {
-    replaceImage(index)
-
-    if (intervalId.value === null) {
-      autoSlide()
-    }
-
-    totalDistanceX.value = 0
-    centerSlide.value = slidesClassName.indexOf(className)
-  })
+  gsapScrollTo('.' + className, duration, [className, index])
 }
 
 let adjustCenterByIndex = (initialIndex, duration = 0.5) => {
@@ -204,16 +200,7 @@ let adjustCenterByIndex = (initialIndex, duration = 0.5) => {
     }
   })
 
-  gsapScrollTo('.' + className, duration, [className, nowIndex], (className, index) => {
-    replaceImage(index)
-
-    if (intervalId.value === null) {
-      autoSlide()
-    }
-
-    totalDistanceX.value = 0
-    centerSlide.value = slidesClassName.indexOf(className)
-  })
+  gsapScrollTo('.' + className, duration, [className, nowIndex])
 }
 
 let replaceImage = (index) => {
@@ -229,8 +216,8 @@ let replaceImage = (index) => {
     }
   }
   let targetElement = slides.value.children[centerNum]
-  gsapScrollTo(targetElement, 0)
-  //gsap.to(slides.value, { duration: 0, scrollTo: { x: targetElement, offsetX: slideOffsetX(targetElement) } })
+  //gsapScrollTo(targetElement, 0)
+  gsap.to(slides.value, { duration: 0, scrollTo: { x: targetElement, offsetX: slideOffsetX(targetElement) } })
 }
 
 let slideOffsetX = (slideElement) => {
@@ -250,19 +237,21 @@ let slideOffsetX = (slideElement) => {
               validScrollMouse = true
             }
           },
+          mousemove: validScrollMouse ? scroll : undefined,
+
           mouseup: validScrollMouse ? scrollCancel : undefined,
           pointercancel: validScrollMouse ? scrollCancel : undefined,
           pointerleave: validScrollMouse ? scrollCancel : undefined,
-          mousemove: validScrollMouse ? scroll : undefined,
 
           touchstart: () => {
             if (!validScrollMouse) {
               validScrollTouch = true
             }
           },
+          touchmove: validScrollTouch ? scroll : undefined,
+
           touchend: validScrollTouch ? scrollCancel : undefined,
           touchCancel: validScrollTouch ? scrollCancel : undefined,
-          touchmove: validScrollTouch ? scroll : undefined,
 
           selectstart: (e) => {
             e.preventDefault()
